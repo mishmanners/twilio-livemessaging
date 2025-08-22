@@ -2,28 +2,32 @@ import { Event } from "@/app/(master-layout)/event/[slug]/page";
 import { modes } from "@/config/menus";
 
 function modeToBeverage(mode: modes, plural: boolean = false) {
-  return mode === "smoothie"
+  return mode === "qa"
     ? plural
-      ? "smoothies"
-      : "smoothie"
-    : mode === "cocktail"
+      ? "questions"
+      : "question"
+    : mode === "panel"
       ? plural
-        ? "drinks"
-        : "drink"
-      : mode === "tea"
-        ? "tea"
-        : "coffee";
+        ? "discussions"
+        : "discussion"
+      : mode === "interview"
+        ? plural
+          ? "interviews"
+          : "interview"
+        : plural
+          ? "questions"
+          : "question";
 }
 
 export function getModifiersMessage(modifiers: string[]) {
-  return `You can add the following add-ons to your order:\n${modifiers
+  return `You can categorize your question with the following categories:\n${modifiers
     .map((m) => `- ${m}`)
     .join("\n")}`;
 }
 
 export function getSystemOfflineMessage(event: Event) {
   const { mode } = event.selection;
-  return `No more ${modeToBeverage(mode, true)} 😱\nIt seems like we are out of  ${modeToBeverage(mode, true)} for today. Have a great day!`;
+  return `Twitter Space Q&A is closed 🎤\nWe're not accepting questions at the moment. Please check back later when we're live!`;
 }
 
 export function getOopsMessage(error: any) {
@@ -31,7 +35,7 @@ export function getOopsMessage(error: any) {
 }
 
 export function getNoMediaHandlerMessage() {
-  return "Sorry, we don't support media messages. Please send a text message to order a drink on us.";
+  return "Sorry, we don't support media messages. Please send a text message with your question for the Twitter Space.";
 }
 
 export function getInvalidEmailMessage() {
@@ -57,7 +61,7 @@ export function getWelcomeMessage(
 ) {
   const welcomeMessage =
     customWelcomeMessage ||
-    `Welcome to the Twilio Booth! Are you ready for a ${modeToBeverage(mode)} on us? 🎉`;
+    `Welcome to the Twilio Twitter Space Q&A! 🎤✨ Do you have a question for our live session?`;
   const leadCollectionSuffix = willCollectedLeads
     ? "\nReply with your full name to get started."
     : "";
@@ -71,13 +75,13 @@ export function getWelcomeBackMessage(
 ) {
   const welcomeMessageSuffix =
     customWelcomeMessage ||
-    `\nAre you ready for a ${modeToBeverage(mode)} on us?`;
+    `\nDo you have a question for our live Twitter Space?`;
 
-  return `We're glad to see you again. You're now at ${event}.\n${welcomeMessageSuffix}`;
+  return `Welcome back to ${event}! 🎙️\n${welcomeMessageSuffix}`;
 }
 
 export function getDataPolicy(mode: string) {
-  return `We only use your phone number to notify you about our ${mode} service and redact all the messages & phone numbers afterward.`;
+  return `We only use your phone number to manage your question submissions and redact all the messages & phone numbers afterward.`;
   // return `We only use your phone number to notify you about our ${mode} service and redact all the messages & phone numbers afterward. You can request to delete your data at any time and cancel open orders by replying with "Forget me".`; TODO switch once implemented and tested
 }
 
@@ -86,9 +90,9 @@ export function getPromptForEmail() {
 }
 
 export function getNoActiveEventsMessage() {
-  return "Oh no! 😕 It seems like we are not serving at the moment. Please check back later. 🙂";
+  return "Oh no! 😕 It seems like we don't have any active Twitter Spaces at the moment. Please check back later. 🙂";
 }
 
 export function getPausedEventMessage() {
-  return "Hey there! We've paused orders for now. Please check back later.";
+  return "Hey there! We've paused question submissions for now. Please check back later when we're live.";
 }

@@ -17,14 +17,15 @@ If you want to learn more about how this project was started, check out the this
 
 ## Features
 
-- Receive messages using [Twilio Messaging]
-- Store orders and real-time synchronization them between back-end and front-end using [Twilio Sync]
+- Receive questions using [Twilio Messaging]
+- Store questions and real-time synchronization them between back-end and front-end using [Twilio Sync]
 - Easy dynamic application configuration using [Twilio Sync]
 - Managing message threads using [Twilio Conversations]
 - Permission management based on [Twilio Sync]
 - Easy way to reset the application from the admin interface
-- Support multiple events that happen in parallel
-- Query for location in the queue as well as canceling the order as a user
+- Support multiple Twitter Spaces that happen in parallel
+- Query for question status in the queue as well as canceling submitted questions
+- AI-powered question categorization and management
 - All combined into a single [NextJS](https://nextjs.org/) web application
 
 

@@ -18,7 +18,7 @@ export function getShowHelpTemplate(
     indiciesOfFullTitles.push(`- {{${i * 3 + 1}}}`);
     items.push({
       item: `{{${i * 3 + 2}}}`,
-      id: `Order a {{${i * 3 + 1}}}`, // should be same as indiciesOfFullTitles because this will be send to the webhook
+      id: `Ask about {{${i * 3 + 1}}}`, // should be same as indiciesOfFullTitles because this will be send to the webhook
       description: `{{${i * 3 + 3}}}`,
     });
   }
@@ -46,12 +46,13 @@ export function getShowHelpTemplate(
 
 const CONFIRMATION_VERIFIED_EMAIL = `Thank you! Your email address has been verified.`;
 function getAvailableOptions(indiciesOfFullTitles: string[]) {
-  return `What would you like? The options are:\n${indiciesOfFullTitles.join(
+  return `What would you like to ask? The question categories are:\n${indiciesOfFullTitles.join(
     "\n",
   )}`;
 }
-const SAMPLE_ORDER = `Or send a message containing your order, e.g. "{{1}}".`;
-const ORDER_LIMITATION_NOTE = `\n\nPS: Every attendee can get up to {{0}}.`;
+const SAMPLE_QUESTION = `Or send a message containing your question, e.g. "{{1}}".`;
+// Removed QUESTION_LIMITATION_NOTE since we no longer limit the number of questions in Twitter Spaces
+const QUESTION_LIMITATION_NOTE = "";
 export function getReadyToOrderTemplate(
   numOptions: number,
   templateName: string,
@@ -72,12 +73,12 @@ export function getReadyToOrderTemplate(
     indiciesOfFullTitles.push(`- {{${i * 3 + 2}}}`);
     items.push({
       item: `{{${i * 3 + 3}}}`,
-      id: `Order a {{${i * 3 + 2}}}`, // should be same as indiciesOfFullTitles because this will be send to the webhook
+      id: `Ask about {{${i * 3 + 2}}}`, // should be same as indiciesOfFullTitles because this will be send to the webhook
       description: `{{${i * 3 + 4}}}`,
     });
   }
 
-  const body = `${CONFIRMATION_VERIFIED_EMAIL} ${getAvailableOptions(indiciesOfFullTitles)}\n${SAMPLE_ORDER}${ORDER_LIMITATION_NOTE}`;
+  const body = `${CONFIRMATION_VERIFIED_EMAIL} ${getAvailableOptions(indiciesOfFullTitles)}\n${SAMPLE_QUESTION}${QUESTION_LIMITATION_NOTE}`;
 
   return {
     friendly_name: templateName,
@@ -117,12 +118,12 @@ export function getReadyToOrderLimitlessTemplate(
     indiciesOfFullTitles.push(`- {{${i * 3 + 2}}}`);
     items.push({
       item: `{{${i * 3 + 3}}}`,
-      id: `Order a {{${i * 3 + 2}}}`, // should be same as indiciesOfFullTitles because this will be send to the webhook
+      id: `Ask about {{${i * 3 + 2}}}`, // should be same as indiciesOfFullTitles because this will be send to the webhook
       description: `{{${i * 3 + 4}}}`,
     });
   }
 
-  const body = `${CONFIRMATION_VERIFIED_EMAIL} ${getAvailableOptions(indiciesOfFullTitles)}\n${SAMPLE_ORDER}`;
+  const body = `${CONFIRMATION_VERIFIED_EMAIL} ${getAvailableOptions(indiciesOfFullTitles)}\n${SAMPLE_QUESTION}`;
 
   return {
     friendly_name: templateName,
@@ -161,12 +162,12 @@ export function getReadyToOrderWithoutEmailValidationTemplate(
     indiciesOfFullTitles.push(`- {{${i * 3 + 2}}}`);
     items.push({
       item: `{{${i * 3 + 3}}}`,
-      id: `Order a {{${i * 3 + 2}}}`, // should be same as indiciesOfFullTitles because this will be send to the webhook
+      id: `Ask about {{${i * 3 + 2}}}`, // should be same as indiciesOfFullTitles because this will be send to the webhook
       description: `{{${i * 3 + 4}}}`,
     });
   }
 
-  const body = `${getAvailableOptions(indiciesOfFullTitles)}\n${SAMPLE_ORDER}${ORDER_LIMITATION_NOTE}`;
+  const body = `${getAvailableOptions(indiciesOfFullTitles)}\n${SAMPLE_QUESTION}${QUESTION_LIMITATION_NOTE}`;
   return {
     friendly_name: templateName,
     language: "en",
@@ -205,12 +206,12 @@ export function getReadyToOrderLimitlessWithoutEmailValidationTemplate(
     indiciesOfFullTitles.push(`- {{${i * 3 + 2}}}`);
     items.push({
       item: `{{${i * 3 + 3}}}`,
-      id: `Order a {{${i * 3 + 2}}}`, // should be same as indiciesOfFullTitles because this will be send to the webhook
+      id: `Ask about {{${i * 3 + 2}}}`, // should be same as indiciesOfFullTitles because this will be send to the webhook
       description: `{{${i * 3 + 4}}}`,
     });
   }
 
-  const body = `${getAvailableOptions(indiciesOfFullTitles)}\n${SAMPLE_ORDER}`;
+  const body = `${getAvailableOptions(indiciesOfFullTitles)}\n${SAMPLE_QUESTION}`;
 
   return {
     friendly_name: templateName,
@@ -269,18 +270,18 @@ export function getEventRegistrationTemplate(
   };
 }
 
-export function getOrderCancelledTemplate(
+export function getQuestionCancelledTemplate(
   templateName: string,
 ): WhatsAppTemplateConfig {
   const body =
-    "Your {{0}} order (*#{{1}}*) has been cancelled. Please check with our staff if you think something is wrong.";
+    "Your {{0}} question (*#{{1}}*) has been cancelled. Please check with our Twitter Spaces hosts if you think something is wrong.";
 
   return {
     friendly_name: templateName,
     language: "en",
     variables: {
-      "0": "order item",
-      "1": "order number",
+      "0": "question category",
+      "1": "question number",
     },
     types: {
       "twilio/text": {
@@ -290,19 +291,18 @@ export function getOrderCancelledTemplate(
   };
 }
 
-export function getOrderReadyTemplate(
+export function getQuestionAnsweredTemplate(
   templateName: string,
 ): WhatsAppTemplateConfig {
   const body =
-    "*Your {{0}} is ready*. You can skip the queue and collect it at {{2}} right away. Ask for order number #{{1}}.";
+    "*Your {{0}} question has been answered*! 🎉 You can listen to the response in the live Twitter Space. Question #{{1}} was featured.";
 
   return {
     friendly_name: templateName,
     language: "en",
     variables: {
-      "0": "order item",
-      "1": "order number",
-      "2": "order pickup location",
+      "0": "question category",
+      "1": "question number",
     },
     types: {
       "twilio/text": {
@@ -312,19 +312,18 @@ export function getOrderReadyTemplate(
   };
 }
 
-export function getOrderReminderTemplate(
+export function getQuestionReminderTemplate(
   templateName: string,
 ): WhatsAppTemplateConfig {
   const body =
-    "Heya! Don't forget your {{0}}. You can skip the queue and collect it at {{2}}. Ask for order number #{{1}}.";
+    "Hey! Your {{0}} question is still in the queue 🎤 It's question #{{1}}. Keep listening to the Twitter Space to hear if it gets answered!";
 
   return {
     friendly_name: templateName,
     language: "en",
     variables: {
-      "0": "order item",
-      "1": "order number",
-      "2": "order pickup location",
+      "0": "question category",
+      "1": "question number",
     },
     types: {
       "twilio/text": {
@@ -334,24 +333,24 @@ export function getOrderReminderTemplate(
   };
 }
 
-export function getOrderConfirmationTemplate(
+export function getQuestionConfirmationTemplate(
   templateName: string,
-  isBarista: boolean,
+  isTwitterSpace: boolean,
 ): WhatsAppTemplateConfig {
-  const header_text = "Your {{0}} order is confirmed!";
+  const header_text = "Your {{0}} question is confirmed!";
   const body =
-    '*Your order number is #{{1}}*\n\nWe\'ll text you back when the order is ready -- or send "queue" to determine your current position\n\nSend  "change order to <new order>" to change your existing order or "cancel order" to cancel it.';
+    '*Your question number is #{{1}}*\n\nWe\'ll consider your question for the live Twitter Space -- or send "status" to check your position in the queue\n\nSend "edit question to <new question>" to change your question or "cancel question" to cancel it.';
 
-  const footer = isBarista
-    ? "Thanks for ordering from the Twilio-powered Barista Bar!"
-    : "Thanks for ordering from the Twilio-powered Smoothie Bar!";
+  const footer = isTwitterSpace
+    ? "Thanks for participating in our Twilio Twitter Space Q&A!"
+    : "Thanks for submitting your question to our live session!";
 
   return {
     friendly_name: templateName,
     language: "en",
     variables: {
-      "0": "order item",
-      "1": "order number",
+      "0": "question category",
+      "1": "question number",
     },
     types: {
       // "twilio/card": {

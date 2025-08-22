@@ -7,10 +7,10 @@ import {
 import nextConfig from "../../next.config";
 import {
   getEventRegistrationTemplate,
-  getOrderCancelledTemplate,
-  getOrderConfirmationTemplate,
-  getOrderReadyTemplate,
-  getOrderReminderTemplate,
+  getQuestionCancelledTemplate,
+  getQuestionConfirmationTemplate,
+  getQuestionAnsweredTemplate,
+  getQuestionReminderTemplate,
   getReadyToOrderLimitlessTemplate,
   getReadyToOrderLimitlessWithoutEmailValidationTemplate,
   getReadyToOrderTemplate,
@@ -22,8 +22,7 @@ import {
 // this script runs mostly sequentially. Use a throttled queue later to optimize if needed
 
 const CONTENT_PREFIX = nextConfig?.env?.CONTENT_PREFIX;
-
-let { OVERRIDE_TEMPLATES } = process.env;
+const { OVERRIDE_TEMPLATES = "" } = process.env;
 
 (async () => {
   await createServiceInstances();
@@ -130,27 +129,27 @@ async function createWhatsAppTemplates() {
       );
     }
 
-    // 7. Order cancelled templates
-    templateName = `${CONTENT_PREFIX}order_cancelled`;
+    // 7. Question cancelled templates
+    templateName = `${CONTENT_PREFIX}question_cancelled`;
     checkIfExistsOrCreateTemplate(
       templateName,
-      getOrderCancelledTemplate(templateName),
+      getQuestionCancelledTemplate(templateName),
       templates,
     );
 
-    // 8. Order ready templates
-    templateName = `${CONTENT_PREFIX}order_ready`;
+    // 8. Question answered templates
+    templateName = `${CONTENT_PREFIX}question_answered`;
     checkIfExistsOrCreateTemplate(
       templateName,
-      getOrderReadyTemplate(templateName),
+      getQuestionAnsweredTemplate(templateName),
       templates,
     );
 
-    // 9. Order reminder templates
-    templateName = `${CONTENT_PREFIX}order_reminder`;
+    // 9. Question reminder templates
+    templateName = `${CONTENT_PREFIX}question_reminder`;
     checkIfExistsOrCreateTemplate(
       templateName,
-      getOrderReminderTemplate(templateName),
+      getQuestionReminderTemplate(templateName),
       templates,
     );
   } catch (e: any) {
