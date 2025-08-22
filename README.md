@@ -1,28 +1,23 @@
 <p align="center">
-  <img src="resources/android-chrome-192x192.png">
-  <h1 align="center">Twilio Mixologist</h1>
+  <h1 align="center">Twilio Twitter Spaces Mesaging</h1>
 </p>
 
 ## About
 
-Twilio Mixologist is an application that allows you to solve the problem of long queues at stands at events. Attendees can order their coffee, smoothie or whatever you serve via Twilio-powered channels, Mixologists get all orders on a website that can be accessed via a tablet and once an order is done the attendee will be notified via the system to come and pick it up. No more queueing and efficient coffee ☕️ ordering! 🎉
+When hosting a Twitter Space, we face a challenge in engaging effectively with our audience. While the platform allows for live conversations, there are key limitations that impact both us as hosts and our audiences as listeners.
+
+So we built this WhatsApp messaging, so that during a live Twitter Space, audience members send questions or comments via a dedicated WhatsApp number (Twilio API) (QR code linked in the Twitter space or similar).
+
+Participants can submit questions anytime, even if they’re not “speaking” in the Space.
 
 If you want to learn more about how this project was started, check out the this blog post:
 
 > [Serving Coffee with Twilio Programmable SMS and React](https://www.twilio.com/en-us/blog/serving-coffee-with-sms-and-react-html)
 
-Different versions of this system have been used at events such as:
-
-- [NDC Oslo](https://ndcoslo.com) 2016, 2017
-- [CSSConf EU](https://2017.cssconf.eu/) && [JSConf EU](https://2017.jsconf.eu/) 2017
-- [WeAreDevelopers World Congress](https://www.wearedevelopers.com/world-congress) 2023, 2024
-- [Mobile World Congress Barcelona](https://www.mwcbarcelona.com/) 2023, 2024
-- [Money 20/20](https://www.money2020.com/) 2023
-- [Twilio SIGNAL](https://signal.twilio.com/) 2023, 2024
 
 ## Features
 
-- Receive orders using [Twilio Messaging]
+- Receive messages using [Twilio Messaging]
 - Store orders and real-time synchronization them between back-end and front-end using [Twilio Sync]
 - Easy dynamic application configuration using [Twilio Sync]
 - Managing message threads using [Twilio Conversations]
@@ -32,10 +27,6 @@ Different versions of this system have been used at events such as:
 - Query for location in the queue as well as canceling the order as a user
 - All combined into a single [NextJS](https://nextjs.org/) web application
 
-### Pending Features
-
-- [ ] Integration with Segment
-- [ ] Your suggestions
 
 ### Channels
 
@@ -62,7 +53,7 @@ The current [Twilio Channels] are:
 
    ```
    # Application related values
-   MIXOLOGIST_LOGIN=someuser:assword
+   MIXOLOGIST_LOGIN=someuser:password
    ADMIN_LOGIN=someadmin:password
    KIOSK_LOGIN=somekiosk:somepassword
    SERVICE_INSTANCE_PREFIX=Mixologist
