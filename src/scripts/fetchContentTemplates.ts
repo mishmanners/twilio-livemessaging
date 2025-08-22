@@ -1,18 +1,8 @@
 "use server";
 
-// Type declaration for Node.js process and require
-declare global {
-  var process: {
-    env: Record<string, string | undefined>;
-  };
-  var require: (id: string) => any;
-}
-
 import { modes } from "@/config/menus";
 import { Event } from "@/app/(master-layout)/event/[slug]/page";
-
-// Use require for axios to avoid TypeScript module resolution issues
-const axios = require("axios");
+import axios from "axios";
 
 const {
   TWILIO_API_KEY = "",
