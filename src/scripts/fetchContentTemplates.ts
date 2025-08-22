@@ -1,25 +1,50 @@
 "use server";
 
+// Type declaration for Node.js process and require
+declare global {
+  var process: {
+    env: Record<string, string | undefined>;
+  };
+  var require: (id: string) => any;
+}
+
 import { modes } from "@/config/menus";
 import { Event } from "@/app/(master-layout)/event/[slug]/page";
 
+// Use require for axios to avoid TypeScript module resolution issues
 const axios = require("axios");
 
-const { SERVICE_INSTANCE_PREFIX = "" } = process.env;
+const {
+  TWILIO_API_KEY = "",
+  TWILIO_API_SECRET = "",
+  SERVICE_INSTANCE_PREFIX = "",
+} = process.env;
 const formattedServicePrefix = SERVICE_INSTANCE_PREFIX.toLowerCase();
 
 function modeToBeverage(mode: modes, plural: boolean = false) {
-  return mode === "smoothie"
+  return mode === "qa"
     ? plural
-      ? "smoothies"
-      : "smoothie"
-    : mode === "cocktail"
+      ? "questions"
+      : "question"
+    : mode === "panel"
       ? plural
-        ? "drinks"
-        : "drink"
-      : mode === "tea"
-        ? "tea"
-        : "coffee";
+        ? "discussions"
+        : "discussion"
+      : mode === "interview"
+        ? plural
+          ? "interviews"
+          : "interview"
+        : mode === "smoothie"
+          ? plural
+            ? "smoothies"
+            : "smoothie"
+          : mode === "cocktail"
+            ? plural
+              ? "drinks"
+              : "drink"
+            : mode === "tea"
+              ? "tea"
+              : "coffee";
 }
 
 function buildContentVariables(variables: any[]) {
@@ -41,8 +66,8 @@ async function getTemplate(templateName: string) {
             "Content-Type": "application/json",
           },
           auth: {
-            username: process.env.TWILIO_API_KEY,
-            password: process.env.TWILIO_API_SECRET,
+            username: TWILIO_API_KEY,
+            password: TWILIO_API_SECRET,
           },
         },
       );
@@ -59,12 +84,12 @@ async function getTemplate(templateName: string) {
   return match;
 }
 
-export async function getWrongOrderMessage(
+export async function getWrongQuestionMessage(
   originalMessage: string,
   availableOptions: any[],
 ) {
   const template = await getTemplate(
-    `${formattedServicePrefix}_wrong_order_${availableOptions.length}`,
+    `${formattedServicePrefix}_wrong_question_${availableOptions.length}`,
   );
 
   return {
@@ -78,52 +103,48 @@ export async function getWrongOrderMessage(
   };
 }
 
-export async function getOrderCancelledMessage(
-  product: string,
-  orderNumber: string,
+export async function getQuestionCancelledMessage(
+  category: string,
+  questionNumber: string,
 ) {
   const template = await getTemplate(
-    `${formattedServicePrefix}_order_cancelled`,
+    `${formattedServicePrefix}_question_cancelled`,
   );
 
   return {
     contentSid: template.sid,
-    contentVariables: buildContentVariables([product, orderNumber]),
+    contentVariables: buildContentVariables([category, questionNumber]),
   };
 }
 
-export async function getOrderReadyMessage(
-  product: string,
-  orderNumber: string,
-  orderPickupLocation: string,
+export async function getQuestionAnsweredMessage(
+  category: string,
+  questionNumber: string,
 ) {
-  const template = await getTemplate(`${formattedServicePrefix}_order_ready`);
+  const template = await getTemplate(`${formattedServicePrefix}_question_answered`);
 
   return {
     contentSid: template.sid,
     contentVariables: buildContentVariables([
-      product,
-      orderNumber,
-      orderPickupLocation,
+      category,
+      questionNumber,
     ]),
   };
 }
 
-export async function getOrderReadyReminderMessage(
-  product: string,
-  orderNumber: string,
-  orderPickupLocation: string,
+export async function getQuestionReminderMessage(
+  category: string,
+  questionNumber: string,
 ) {
   const template = await getTemplate(
-    `${formattedServicePrefix}_order_reminder`,
+    `${formattedServicePrefix}_question_reminder`,
   );
 
   return {
     contentSid: template.sid,
     contentVariables: buildContentVariables([
-      product,
-      orderNumber,
-      orderPickupLocation,
+      category,
+      questionNumber,
     ]),
   };
 }
@@ -166,31 +187,31 @@ export async function getShowModifiersMessage(
   };
 }
 
-export async function getReadyToOrderMessage(
+export async function getReadyToAskMessage(
   event: Event,
   availableOptions: any[],
-  maxNumberOrders: number,
+  maxNumberQuestions: number,
   emailValidationSuffix: boolean,
 ) {
   const { mode, items, modifiers } = event.selection;
-  const maxOrders = `${maxNumberOrders} ${modeToBeverage(mode, true)}`;
-  let sampleOrder = items[1].title;
+  const maxQuestions = `${maxNumberQuestions} ${modeToBeverage(mode, true)}`;
+  let sampleQuestion = items[1].title;
   if (modifiers.length > 0) {
-    sampleOrder += ` with ${modifiers[modifiers.length - 1]}`;
+    sampleQuestion += ` with ${modifiers[modifiers.length - 1]}`;
   }
 
-  const limitess = maxNumberOrders >= 50 ? "_limitless" : "";
+  const limitless = maxNumberQuestions >= 50 ? "_limitless" : "";
   const emailSuffix = emailValidationSuffix ? "_without_email" : "";
 
   const template = await getTemplate(
-    `${formattedServicePrefix}_ready_to_order${limitess}${emailSuffix}_${availableOptions.length}`,
+    `${formattedServicePrefix}_ready_to_order${limitless}${emailSuffix}_${availableOptions.length}`,
   );
 
   return {
     contentSid: template.sid,
     contentVariables: buildContentVariables([
-      maxOrders,
-      sampleOrder,
+      maxQuestions,
+      sampleQuestion,
       ...availableOptions
         .map((o) => [o.title, o.shortTitle, o.description])
         .flat(),

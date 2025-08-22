@@ -8,11 +8,12 @@ import { PhoneNumberUtil } from "google-libphonenumber";
 export function getCountryFromPhone(phone: string): ICountry | undefined {
   const phoneUtil = PhoneNumberUtil.getInstance();
   const number = phoneUtil.parseAndKeepRawInput(phone.replace("whatsapp:", ""));
-  return Object.values(countries).find((country) => {
+  return Object.values(countries).find((country: ICountry) => {
     const countryCode = number.getCountryCode();
     if (countryCode) {
       return country.phone.includes(countryCode);
     }
+    return false;
   });
 }
 

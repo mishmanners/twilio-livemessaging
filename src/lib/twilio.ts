@@ -14,10 +14,10 @@ import {
 } from "@/scripts/buildContentTemplates";
 import {
   getAttemptedActionTool,
-  getEditOrderTool,
-  getFetchOrderInfoTool,
+  getEditQuestionTool,
+  getFetchQuestionInfoTool,
   getForgetUserTool,
-  getSubmitOrdersTool,
+  getSubmitQuestionTool,
   getSystemPrompt,
 } from "./aiAssistantTemplates";
 import { Event } from "@/app/(master-layout)/event/[slug]/page";
@@ -133,23 +133,21 @@ export async function createAiAssistant(event: Event) {
   });
 
   const assistant = await client.assistants.v1.assistants.create({
-    name: `AI Barista Assistant for ${event.name}`,
+    name: `AI Q&A Assistant for ${event.name}`,
     personality_prompt: getSystemPrompt(event.selection.mode),
   });
 
   const tools = [
-    getSubmitOrdersTool(
-      `${PUBLIC_BASE_URL}/webhooks/ai-assistants/order?event=${event.slug}`,
-      event.selection.items,
+    getSubmitQuestionTool(
+      `${PUBLIC_BASE_URL}/webhooks/ai-assistants/question?event=${event.slug}`,
       event.selection.modifiers,
     ),
-    getEditOrderTool(
-      `${PUBLIC_BASE_URL}/webhooks/ai-assistants/editOrder?event=${event.slug}`,
-      event.selection.items,
+    getEditQuestionTool(
+      `${PUBLIC_BASE_URL}/webhooks/ai-assistants/editQuestion?event=${event.slug}`,
       event.selection.modifiers,
     ),
-    getFetchOrderInfoTool(
-      `${PUBLIC_BASE_URL}/webhooks/ai-assistants/order?event=${event.slug}`,
+    getFetchQuestionInfoTool(
+      `${PUBLIC_BASE_URL}/webhooks/ai-assistants/question?event=${event.slug}`,
     ),
 
     getForgetUserTool(
@@ -188,12 +186,12 @@ export async function updateAiAssistant(aiAssistantID: string, event: Event) {
     .fetch();
 
   const oldToolsToRemove = assistant.tools.filter(
-    (tool) =>
-      tool.name === "Submit Order" || tool.name === "Edit / Cancel Order", //TODO consider using unique tool names per event
+    (tool: any) =>
+      tool.name === "Submit Question" || tool.name === "Edit / Cancel Question",
   );
   if (oldToolsToRemove?.length > 0) {
     await Promise.all(
-      oldToolsToRemove.map((toRemove) =>
+      oldToolsToRemove.map((toRemove: any) =>
         client.assistants.v1.tools(toRemove.id).remove(),
       ),
     );
@@ -201,14 +199,12 @@ export async function updateAiAssistant(aiAssistantID: string, event: Event) {
   }
 
   const newTools = [
-    getSubmitOrdersTool(
-      `${PUBLIC_BASE_URL}/webhooks/ai-assistants/order?event=${event.slug}`,
-      event.selection.items,
+    getSubmitQuestionTool(
+      `${PUBLIC_BASE_URL}/webhooks/ai-assistants/question?event=${event.slug}`,
       event.selection.modifiers,
     ),
-    getEditOrderTool(
-      `${PUBLIC_BASE_URL}/webhooks/ai-assistants/editOrder?event=${event.slug}`,
-      event.selection.items,
+    getEditQuestionTool(
+      `${PUBLIC_BASE_URL}/webhooks/ai-assistants/editQuestion?event=${event.slug}`,
       event.selection.modifiers,
     ),
   ];
@@ -420,7 +416,7 @@ export async function findSyncMapItems(
   try {
     const syncMap = syncService.syncMaps()(syncMapUniqueName);
     const syncMapItems = await syncMap.syncMapItems.list();
-    const filteredItems = syncMapItems.filter((item) => {
+    const filteredItems = syncMapItems.filter((item: any) => {
       return Object.keys(filters).every((key) => {
         return item.data.hasOwnProperty(key) && item.data[key] === filters[key];
       });
@@ -548,7 +544,7 @@ export async function getPossibleSenders() {
   "use server";
   const messagingService = await getMessagingService();
   const senders = await messagingService.phoneNumbers().list(); // Add whatsapp senders here once the API is available
-  return senders.map((s) => s.phoneNumber);
+  return senders.map((s: any) => s.phoneNumber);
 }
 
 export async function createServiceInstances() {
